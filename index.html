@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Link Planning Tool</title>
+
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <form>
+      <table>
+        <caption>
+          <h2>Link Planning Tool</h2>
+        </caption>
+        <tr>
+          <td>Enter co-ordinates Point A:</td>
+          <td>
+            <input
+              type="text"
+              name="latA"
+              id="latA"
+              placeholder="Latitude A"
+            />degrees
+          </td>
+          <td>
+            <input
+              type="text"
+              name="longA"
+              id="longA"
+              placeholder="Longitude A"
+            />degrees
+          </td>
+        </tr>
+        <tr>
+          <td>Enter co-ordinates of Point B:</td>
+          <td>
+            <input
+              type="text"
+              name="latB"
+              id="latB"
+              placeholder="Latitude B"
+            />degrees
+          </td>
+          <td>
+            <input
+              type="text"
+              name="longB"
+              id="longB"
+              placeholder="Longitude B"
+            />degrees
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td colspan="2">
+            <input
+              type="button"
+              class="distbtn"
+              value="Calculate"
+              onclick="calculate(this.form, this.form.latA.value, this.form.longA.value, this.form.latB.value, this.form.longB.value)"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>Link distance (in Km):</td>
+          <td colspan="2">
+            <input type="text" name="linkDistance" id="linkDistance" />Km
+          </td>
+        </tr>
+        <tr>
+          <td>Azimuth Angle:</td>
+          <td><input type="text" name="azimuthA" id="azimuthA" />degree</td>
+          <td><input type="text" name="azimuthB" id="azimuthB" />degree</td>
+        </tr>
+        <tr>
+          <td>RF Channel Bandwidth:</td>
+          <td>
+            <select
+              name="bandWidth"
+              id="bandWidth"
+              onchange="populatefreq(); resetTable()"
+            >
+              <option value="" hidden>Channel Bandwidth</option>
+              <option value="20">20</option>
+              <option value="40">40</option>
+              <option value="80">80</option>
+            </select>
+          </td>
+          <td>
+            <select
+              name="freq"
+              id="channelfrequency"
+              onchange="calculateeirp(); fresnelzone()"
+            ></select>
+          </td>
+        </tr>  
+        </tr>
+        <tr>
+          <td>EIRP:</td>
+          <td><input type="text" id="eirpvalue" /></td>
+        </tr>
+        <tr>
+          <td>Fresnel Radius(in m):</td>
+          <td colspan="2">
+            <input type="text" name="fresnelRadius" id="fresnelRadius" />metre
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>Site A</td>
+          <td>Site B</td>
+        </tr>
+        <tr>
+          <td>Antenna Height</td>
+          <td><input type="number" name="antheighta" id="antheighta">
+          </td>
+          <td><input type="number" name="antheightb" id="antheightb"></td>
+        </tr>
+        <tr>
+          <td>Cable and other Losses: </td>
+          <td><input type="number" id="cableloss"></td>
+        </tr>
+        <tr>
+          <td>Choose UBR:</td>
+          <td>
+            <select
+              name="radioA"
+              id="radioA"
+              onchange="sitea(this.form, this.form.linkDistance.value)"
+            >
+              <option value="" selected disabled hidden>Radio</option>
+              <option value="ion4le">ion4le</option>
+              <option value="ion4l1">io4l1</option>
+              <option value="ion4l2">ion4l2</option>
+              <option value="ion4l3">ion4l3</option>
+              <option value="ion4l3j">ion4l3j</option>
+            </select>
+          </td>
+          <td>
+            <select
+              name="radioB"
+              id="radioB"
+              onchange="siteb(this.form, this.form.linkDistance.value)"
+            >
+              <option value="" selected disabled hidden>Radio</option>
+              <option value="ion4le">ion4le</option>
+              <option value="ion4l1">io4l1</option>
+              <option value="ion4l2">ion4l2</option>
+              <option value="ion4l3">ion4l3</option>
+              <option value="ion4l3j">ion4l3j</option>
+
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Transmit Power:</td>
+          <td><input type="text" id="txa" />dBm</td>
+          <td><input type="text" id="txb" />dBm</td>
+        </tr>
+        <tr>
+          <td>Antenna Gain:</td>
+          <td><input type="text" id="rxa" />dBm</td>
+          <td><input type="text" id="rxb" />dBm</td>
+        </tr>
+        <tr>
+          
+          <td>Received Signal Level:</td>
+          <td><input type="text" name="rslA" id="rslA" />dBm</td>
+          <td><input type="text" name="rslB" id="rslB" />dBm</td>
+        </tr>
+        <tr>
+          <td>SNR:</td>
+          <td><input type="text" name="snrA" id="snrA" />dB</td>
+          <td><input type="text" name="snrB" id="snrB" />dB</td>
+        </tr>
+        <tr>
+          <td>Fade Margin:</td>
+          <td><input type="text" name="fademarginA" id="fademarginA" />dB</td>
+          <td><input type="text" name="fademarginB" id="fademarginB" />dB</td>
+        </tr>
+        <tr>
+          <td>MCS:</td>
+          <td><input type="text" name="mcsA" id="mcsA" /></td>
+          <td><input type="text" name="mcsB" id="mcsB" /></td>
+        </tr>
+        <tr>
+          <td>Modulation:</td>
+          <td><input type="text" name="modulationA" id="modulationA" /></td>
+          <td><input type="text" name="modulationB" id="modulationB" /></td>
+        </tr>
+        <tr>
+          <td>FEC:</td>
+          <td><input type="text" name="fecA" id="fecA" /></td>
+          <td><input type="text" name="fecB" id="fecB" /></td>
+        </tr>
+        <tr>
+          <td>Link Rate:</td>
+          <td><input type="text" name="linkrateA" id="linkrateA" /></td>
+          <td><input type="text" name="linkrateB" id="linkrateB" /></td>
+        </tr>
+        <tr>
+          <td>DL Throughput(in Mbps):</td>
+          <td><input type="text" name="dlthroughputA" id="dlthroughputA" /></td>
+          <td><input type="text" name="dlthroughputB" id="dlthroughputB" /></td>
+        </tr>
+        <tr>
+          <td>Link Throughput(in Mbps):</td>
+          <td colspan="2">
+            <input type="text" name="linkThroughput" id="linkThroughput" />
+          </td>
+        </tr>
+      </table>
+    </form>
+    <!-- This is the table pop-up of the link report -->
+
+    <button class="btn" id="popupbutton" onclick= "availability()">Generate Report</button>
+    <div class="overlay" display="none">
+      <div class="content">
+        <div class="head">
+          <div class="reportheading">Link Report</div>
+          <div class="close-button">&times;</div>
+        </div>
+        <div class="tablecontent">
+          <table>
+            <tr>
+              <td>RF Channel Bandwidth</td>
+              <td>
+                <input type="text" id="popbw" />
+              </td>
+            </tr>
+            <tr>
+              <td>Stream/MIMO</td>
+              <td><input type="text" id="popmimo" /></td>
+            </tr>
+            <tr>
+              <td>Fresnel Zone Radius</td>
+              <td>
+                <input type="text" id="popfres" />
+              </td>
+            </tr>
+            <tr>
+              <td>Hop Length(in Km)</td>
+              <td><input type="text" id="pophop" /></td>
+            </tr>
+            <tr>
+              <td>Tx Power</td>
+              <td><input type="text" id="poptx" /></td>
+            </tr>
+            <tr>
+              <td>Antenna Gain</td>
+              <td><input type="text" id="poprx" /></td>
+            </tr>
+            <tr>
+              <td>RSSI</td>
+              <td><input type="text" id="poprss" /></td>
+            </tr>
+            <tr>
+              <td>Azimuth at Site A</td>
+              <td><input type="text" id="popazimutha" /></td>
+            </tr>
+            <tr>
+              <td>Azimuth at Site B</td>
+              <td><input type="text" id="popazimuthb" /></td>
+            </tr>
+            <tr>
+              <td>Modulation</td>
+              <td><input type="text" id="popmodulation" /></td>
+            </tr>
+            <tr>
+              <td>Link Rate</td>
+              <td><input type="text" id="poplinkrate" /></td>
+            </tr>
+            <tr>
+              <td>Throughput</td>
+              <td><input type="text" id="popthroughput" /></td>
+            </tr>
+            <tr>
+              <td>MCS</td>
+              <td><input type="text" id="popmcs" /></td>
+            </tr>
+            <tr>
+              <td>Fade Margin</td>
+              <td><input type="text" id="popfade" /></td>
+            </tr>
+            <tr>
+              <td>Link Reliability</td>
+              <td><input type="text" name="linkavailability" id="popavailability"></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLE 1 BANDWIDTH 20MHz -->
+    <table id="throughput20MHz" class="mcsTable">
+      <tr>
+        <th>Min</th>
+        <th>Max</th>
+        <th>MCS</th>
+        <th>Modulation</th>
+        <th>FEC</th>
+        <th>Link Rate</th>
+        <th>Throughput</th>
+      </tr>
+
+      <tr>
+        <td>3</td>
+        <td>6</td>
+        <td>0</td>
+        <td>BPSK</td>
+        <td>1/2</td>
+        <td>14.4</td>
+        <td>10</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>9</td>
+        <td>1</td>
+        <td>QPSK</td>
+        <td>1/2</td>
+        <td>28.9</td>
+        <td>20</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>13</td>
+        <td>2</td>
+        <td>QPSK</td>
+        <td>3/4</td>
+        <td>43.3</td>
+        <td>30</td>
+      </tr>
+      <tr>
+        <td>14</td>
+        <td>16</td>
+        <td>3</td>
+        <td>16-QAM</td>
+        <td>1/2</td>
+        <td>57.8</td>
+        <td>40</td>
+      </tr>
+      <tr>
+        <td>17</td>
+        <td>19</td>
+        <td>4</td>
+        <td>16-QAM</td>
+        <td>3/4</td>
+        <td>86.7</td>
+        <td>60</td>
+      </tr>
+      <tr>
+        <td>20</td>
+        <td>22</td>
+        <td>5</td>
+        <td>64-QAM</td>
+        <td>2/3</td>
+        <td>115.6</td>
+        <td>80</td>
+      </tr>
+      <tr>
+        <td>23</td>
+        <td>25</td>
+        <td>6</td>
+        <td>64-QAM</td>
+        <td>3/4</td>
+        <td>130</td>
+        <td>91</td>
+      </tr>
+      <tr>
+        <td>26</td>
+        <td>28</td>
+        <td>7</td>
+        <td>64-QAM</td>
+        <td>5/6</td>
+        <td>144.4</td>
+        <td>101</td>
+      </tr>
+      <tr>
+        <td>29</td>
+        <td>29</td>
+        <td>8</td>
+        <td>256-QAM</td>
+        <td>3/4</td>
+        <td>173.3</td>
+        <td>120</td>
+      </tr>
+      <tr>
+        <td>30</td>
+        <td>82</td>
+        <td>9</td>
+        <td>256-QAM</td>
+        <td>5/6</td>
+        <td>192</td>
+        <td>135</td>
+      </tr>
+    </table>
+
+    <!-- TABLE 2 BANDWIDTH 40MHz  -->
+
+    <table id="throughput40MHz" class="mcsTable" >
+      <tr>
+        <th>Min</th>
+        <th>Max</th>
+        <th>MCS</th>
+        <th>Modulation</th>
+        <th>FEC</th>
+        <th>Link Rate</th>
+        <th>Throughput</th>
+      </tr>
+
+      <tr>
+        <td>3</td>
+        <td>5</td>
+        <td>0</td>
+        <td>BPSK</td>
+        <td>1/2</td>
+        <td>30</td>
+        <td>21</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>8</td>
+        <td>1</td>
+        <td>QPSK</td>
+        <td>1/2</td>
+        <td>60</td>
+        <td>42</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>12</td>
+        <td>2</td>
+        <td>QPSK</td>
+        <td>3/4</td>
+        <td>90</td>
+        <td>63</td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td>15</td>
+        <td>3</td>
+        <td>16-QAM</td>
+        <td>1/2</td>
+        <td>120</td>
+        <td>84</td>
+      </tr>
+      <tr>
+        <td>16</td>
+        <td>18</td>
+        <td>4</td>
+        <td>16-QAM</td>
+        <td>3/4</td>
+        <td>180</td>
+        <td>126</td>
+      </tr>
+      <tr>
+        <td>19</td>
+        <td>21</td>
+        <td>5</td>
+        <td>64-QAM</td>
+        <td>2/3</td>
+        <td>240</td>
+        <td>168</td>
+      </tr>
+      <tr>
+        <td>22</td>
+        <td>25</td>
+        <td>6</td>
+        <td>64-QAM</td>
+        <td>3/4</td>
+        <td>270</td>
+        <td>189</td>
+      </tr>
+      <tr>
+        <td>26</td>
+        <td>28</td>
+        <td>7</td>
+        <td>64-QAM</td>
+        <td>5/6</td>
+        <td>300</td>
+        <td>210</td>
+      </tr>
+      <tr>
+        <td>29</td>
+        <td>29</td>
+        <td>8</td>
+        <td>256-QAM</td>
+        <td>3/4</td>
+        <td>360</td>
+        <td>252</td>
+      </tr>
+      <tr>
+        <td>30</td>
+        <td>80</td>
+        <td>9</td>
+        <td>256-QAM</td>
+        <td>5/6</td>
+        <td>400</td>
+        <td>280</td>
+      </tr>
+    </table>
+
+    <table id="throughput80MHz" class="mcsTable">
+      <tr>
+        <th>Min</th>
+        <th>Max</th>
+        <th>MCS</th>
+        <th>Modulation</th>
+        <th>FEC</th>
+        <th>Link Rate</th>
+        <th>Throughput</th>
+      </tr>
+
+      <tr>
+        <td>6</td>
+        <td>9</td>
+        <td>0</td>
+        <td>BPSK</td>
+        <td>1/2</td>
+        <td>65</td>
+        <td>45</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>11</td>
+        <td>1</td>
+        <td>QPSK</td>
+        <td>1/2</td>
+        <td>130</td>
+        <td>91</td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td>14</td>
+        <td>2</td>
+        <td>QPSK</td>
+        <td>3/4</td>
+        <td>195</td>
+        <td>135</td>
+      </tr>
+      <tr>
+        <td>15</td>
+        <td>16</td>
+        <td>3</td>
+        <td>16-QAM</td>
+        <td>1/2</td>
+        <td>260</td>
+        <td>182</td>
+      </tr>
+      <tr>
+        <td>17</td>
+        <td>19</td>
+        <td>4</td>
+        <td>16-QAM</td>
+        <td>3/4</td>
+        <td>390</td>
+        <td>275</td>
+      </tr>
+      <tr>
+        <td>20</td>
+        <td>22</td>
+        <td>5</td>
+        <td>64-QAM</td>
+        <td>2/3</td>
+        <td>520</td>
+        <td>365</td>
+      </tr>
+      <tr>
+        <td>23</td>
+        <td>25</td>
+        <td>6</td>
+        <td>64-QAM</td>
+        <td>3/4</td>
+        <td>585</td>
+        <td>410</td>
+      </tr>
+      <tr>
+        <td>26</td>
+        <td>29</td>
+        <td>7</td>
+        <td>64-QAM</td>
+        <td>5/6</td>
+        <td>650</td>
+        <td>455</td>
+      </tr>
+      <tr>
+        <td>30</td>
+        <td>30</td>
+        <td>8</td>
+        <td>256-QAM</td>
+        <td>3/4</td>
+        <td>780</td>
+        <td>546</td>
+      </tr>
+      <tr>
+        <td>31</td>
+        <td>80</td>
+        <td>9</td>
+        <td>256-QAM</td>
+        <td>5/6</td>
+        <td>866.7</td>
+        <td>610</td>
+      </tr>
+    </table>
+
+    <!-- ------------------------------------------------------ -->
+    <!-- Table to refer the EIRP for different channel bandwidths -->
+    <!-- -------------------------------------------------------- -->
+
+    <!-- Channel Bandwidth - 20MHz -->
+    <table id="eirp20MHz" border="1" class="eirpTable">
+      <caption>
+        Channel Bandwidth - 20 MHz
+      </caption>
+      <tr>
+        <th>CF</th>
+        <th>Channel</th>
+        <th>EIRP</th>
+      </tr>
+      <tr>
+        <td>5160</td>
+        <td>34</td>
+        <td>53</td>
+      </tr>
+      <tr>
+        <td>5180</td>
+        <td>36</td>
+        <td>53</td>
+      </tr>
+      <tr>
+        <td>5200</td>
+        <td>40</td>
+        <td>53</td>
+      </tr>
+      <tr>
+        <td>5220</td>
+        <td>44</td>
+        <td>53</td>
+      </tr>
+      <tr>
+        <td>5240</td>
+        <td>48</td>
+        <td>53</td>
+      </tr>
+      <tr>
+        <td>5735</td>
+        <td>147</td>
+        <td>47</td>
+      </tr>
+      <tr>
+        <td>5755</td>
+        <td>151</td>
+        <td>47</td>
+      </tr>
+      <tr>
+        <td>5775</td>
+        <td>155</td>
+        <td>47</td>
+      </tr>
+      <tr>
+        <td>5795</td>
+        <td>159</td>
+        <td>47</td>
+      </tr>
+      <tr>
+        <td>5815</td>
+        <td>163</td>
+        <td>47</td>
+      </tr>
+      <tr>
+        <td>5835</td>
+        <td>168</td>
+        <td>47</td>
+      </tr>
+      <tr>
+        <td>5855</td>
+        <td>171</td>
+        <td>47</td>
+      </tr>
+    </table>
+
+    <!-- Table for channel Bandwidth - 40MHz -->
+    <table id="eirp40MHz" border="1" class="eirpTable">
+      <caption>
+        Channel Bandwidth - 40 MHz
+      </caption>
+      <tr>
+        <th>CF</th>
+        <th>Channel</th>
+        <th>EIRP</th>
+      </tr>
+      <tr>
+        <td>5170</td>
+        <td>36</td>
+        <td>53</td>
+      </tr>
+      <tr>
+        <td>5210</td>
+        <td>42</td>
+        <td>53</td>
+      </tr>
+      <tr>
+        <td>5745</td>
+        <td>149</td>
+        <td>47</td>
+      </tr>
+      <tr>
+        <td>5785</td>
+        <td>157</td>
+        <td>47</td>
+      </tr>
+      <tr>
+        <td>5825</td>
+        <td>165</td>
+        <td>47</td>
+      </tr>
+    </table>
+
+    <!-- Table for channel Bandwidth - 80MHz -->
+    <table id="eirp80MHz" border="1" class="eirpTable">
+      <caption>
+        Channel Bandwidth - 80MHz
+      </caption>
+      <tr>
+        <th>CF</th>
+        <th>Channel</th>
+        <th>EIRP</th>
+      </tr>
+      <tr>
+        <td>5190</td>
+        <td>42</td>
+        <td>53</td>
+      </tr>
+      <tr>
+        <td>5765</td>
+        <td>155</td>
+        <td>47</td>
+      </tr>
+    </table>
+  </body>
+
+  <script src="hopdist_azimuth.js"></script>
+  <script src="eirp_fresnel.js"></script>
+  <script src="RSL.js"></script>
+  <script src="mcstable_populate.js"></script>
+  <script src="linkreport_popup.js"></script>
+  <script src="link_availability.js"></script>
+</html>
